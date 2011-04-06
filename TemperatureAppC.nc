@@ -20,7 +20,7 @@ configuration TemperatureAppC { }
 implementation
 {
   components TemperatureC, MainC, ActiveMessageC, LedsC,
-    new TimerMilliC(), new DemoSensorC() as Sensor, 
+    new TimerMilliC(), new SensirionSht11C() as Sensor,
     new AMSenderC(AM_TEMPERATURE), new AMReceiverC(AM_TEMPERATURE);
 
   TemperatureC.Boot -> MainC;
@@ -28,7 +28,7 @@ implementation
   TemperatureC.AMSend -> AMSenderC;
   TemperatureC.Receive -> AMReceiverC;
   TemperatureC.Timer -> TimerMilliC;
-  TemperatureC.Read -> Sensor;
+  TemperatureC.Read -> Sensor.Temperature;
   TemperatureC.Leds -> LedsC;
 
   
