@@ -131,11 +131,14 @@ implementation
   }
 
   event void Read.readDone(error_t result, uint16_t data) {
+    float tempC;
     if (result != SUCCESS)
       {
 	data = 0xffff;
 	report_problem();
       }
-    local.readings[reading++] = data;
+	  // conversion
+	  tempC = ( (-CONVERSION_D1) + (CONVERSION_D2 * data) ) / 100;
+    local.readings[reading++] = tempC;
   }
 }
