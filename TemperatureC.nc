@@ -34,7 +34,7 @@ implementation
   bool sendBusy;
 
   /* Current local state - interval, version and accumulated readings */
-  oscilloscope_t local;
+  temperature_t local;
 
   uint8_t reading; /* 0 to NREADINGS */
 
@@ -70,7 +70,7 @@ implementation
   }
 
   event message_t* Receive.receive(message_t* msg, void* payload, uint8_t len) {
-    oscilloscope_t *omsg = payload;
+    temperature_t *omsg = payload;
 
     report_received();
 

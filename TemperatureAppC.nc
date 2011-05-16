@@ -21,7 +21,7 @@ implementation
 {
   components TemperatureC, MainC, ActiveMessageC, LedsC,
     new TimerMilliC(), new DemoSensorC() as Sensor, 
-    new AMSenderC(AM_OSCILLOSCOPE), new AMReceiverC(AM_OSCILLOSCOPE);
+    new AMSenderC(AM_TEMPERATURE), new AMReceiverC(AM_TEMPERATURE);
 
   TemperatureC.Boot -> MainC;
   TemperatureC.RadioControl -> ActiveMessageC;
