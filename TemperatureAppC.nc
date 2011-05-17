@@ -17,6 +17,8 @@
  * @author David Gay
  */
 
+#include "printf.h"
+
 configuration TemperatureAppC { 
 }
 

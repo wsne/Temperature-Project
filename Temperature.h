@@ -22,7 +22,7 @@ enum {
   NACKTRIES = 10,
 
   /* Default sampling period. */
-  DEFAULT_INTERVAL = 256,
+  DEFAULT_INTERVAL = 1024,
 
   AM_TEMPERATURE = 0x93,
 
@@ -38,9 +38,8 @@ typedef nx_struct temperature {
   nx_uint16_t id; /* Mote id of sending mote. */
   nx_uint16_t count; /* The readings are samples count * NREADINGS onwards */
   nx_uint16_t readings[NREADINGS];
+  nx_uint16_t sendTry; /* number of times the package has been send */
 } temperature_t;
 
 #endif
 
-
-task void sendReadings();
