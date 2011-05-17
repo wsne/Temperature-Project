@@ -16,12 +16,20 @@
  *
  * @author David Gay
  */
-configuration TemperatureAppC { }
+
+configuration TemperatureAppC { 
+}
+
 implementation
 {
-  components TemperatureC, MainC, ActiveMessageC, LedsC,
-    new TimerMilliC(), new SensirionSht11C() as Sensor,
-    new AMSenderC(AM_TEMPERATURE), new AMReceiverC(AM_TEMPERATURE);
+  components TemperatureC, 
+	MainC, 
+	ActiveMessageC, 
+	LedsC,
+    	new TimerMilliC(), 
+	new SensirionSht11C() as Sensor,
+    	new AMSenderC(AM_TEMPERATURE), 
+	new AMReceiverC(AM_TEMPERATURE);
 
   TemperatureC.Boot -> MainC;
   TemperatureC.RadioControl -> ActiveMessageC;
@@ -30,6 +38,7 @@ implementation
   TemperatureC.Timer -> TimerMilliC;
   TemperatureC.Read -> Sensor.Temperature;
   TemperatureC.Leds -> LedsC;
+  TemperatureC.PacketAcknowledgements -> ActiveMessageC;
 
   
 }

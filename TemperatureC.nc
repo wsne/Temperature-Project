@@ -26,8 +26,10 @@ module TemperatureC @safe()
 		interface Timer<TMilli>;
 		interface Read<uint16_t>;
 		interface Leds;
+		interface PacketAcknowledgements;
 	}
 }
+
 implementation
 {
 	message_t sendBuf;
