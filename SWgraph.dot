@@ -1,0 +1,12 @@
+graph g{
+	node [
+		shape = "box"
+	]
+	Boot -> MainC
+	RadioControl -> ActiveMessageC
+	AMSend -> AMSenderC
+	Receive -> AMReceiverC
+	Timer -> TimerMilliC
+	Read -> Sensor.Temperature
+	Leds -> LedsC
+}
