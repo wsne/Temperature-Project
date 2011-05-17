@@ -53,7 +53,11 @@ implementation
 	bool suppressCountChange;
 
 	// Use LEDs to report various status issues.
-	void report_problem() { call Leds.led0Toggle(); }
+	void report_problem() { 
+		printf("REPORT_PROBLEM CALLED \n");
+		printfflush();
+		call Leds.led0Toggle(); 
+	}
 	void report_sent() { call Leds.led1Toggle(); }
 	void report_received() { call Leds.led2Toggle(); }
 
@@ -66,9 +70,12 @@ implementation
 
 	void startTimer() {
 		call Timer.startPeriodic(local.interval);
+		printf("Timerstarted with %d \n", local.interval);
+		printfflush();
 		reading = 0;
 		ackTries = 0;
 		printf("ackTries SET AT START \n");
+		printfflush();
 	}
 
 	event void RadioControl.startDone(error_t error) {
@@ -88,8 +95,8 @@ implementation
 		 */
 		if (omsg->version > local.version && 1==0) 
 		{
-			local.version = omsg->version;
-			local.interval = omsg->interval;
+			//local.version = omsg->version;
+			//local.interval = omsg->interval;
 			startTimer();
 		}
 		if (omsg->count > local.count && 1==0)
@@ -106,6 +113,10 @@ implementation
 	   - read next sample
 	 */
 	event void Timer.fired() {
+		printf("##################\n");
+		printf("TimerFired\n");
+		printf("##################\n");
+		printfflush();
 		if (reading == NREADINGS)
 		{
 			sendReadings();
@@ -114,29 +125,28 @@ implementation
 			report_problem();
 	}
 
-	event void AMSend.sendDone(message_t* msg, error_t error) {
+	event void AMSend.sendDone(message_t *msg, error_t error) {
+		sendBusy = FALSE;
 		if(call PacketAcknowledgements.wasAcked(msg)) {
 			printf("The package was Acked \n");
+			printfflush();
 			report_sent();
 			ackTries = 0;
 			reading = 0;
-			printf("ackTries RESET \n");
 		} else {
-			printf("The package NOT was Acked \n");
+			printf("The package was NOT Acked \n");
+			printfflush();
 			if (ackTries < NACKTRIES) {
-				printf("Resend the package \n");
 				sendReadings();
-			}
-			if (ackTries == NACKTRIES) {
+			} else if (ackTries == NACKTRIES) {
 				printf("ackTries is now == NACKTRIES \n");
+				printfflush();
 				reading = 0;
 				ackTries = 0;
 				printf("ackTries RESET NEEDS SLEEPMODE \n");
+				printfflush();
 			}
-			report_problem();
 		}
-
-		sendBusy = FALSE;
 	}
 
 	event void Read.readDone(error_t result, uint16_t data) {
@@ -152,21 +162,25 @@ implementation
 	}
 
 	void sendReadings() {
-		local.sendTry = ackTries;
-		printf("sendReadings called \n");
 		if (!sendBusy && sizeof local <= call AMSend.maxPayloadLength())
 		{
+			printf("sizeof local <= maxPayload \n");
+			printfflush();
 			// Don't need to check for null because we've already checked length
 			// above
 			memcpy(call AMSend.getPayload(&sendBuf, sizeof(local)), &local, sizeof local);
-			call PacketAcknowledgements.requestAck(&sendBuf);
-			if (call AMSend.send(41, &sendBuf, sizeof local) == SUCCESS)
+			if (call PacketAcknowledgements.requestAck(&sendBuf) == SUCCESS)
+				printf("Success in requestAck\n");
+			if (call AMSend.send(41, &sendBuf, sizeof local) == SUCCESS) {
 				sendBusy = TRUE;
 				ackTries++;
 				printf("ackTries = %d \n" , ackTries);
+				printfflush();
+			}
 		}
-		if (!sendBusy)
+		if (!sendBusy) {
 			report_problem();
+		}
 
 
 		/* Part 2 of cheap "time sync": increment our count if we didn't
