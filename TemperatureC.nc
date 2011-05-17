@@ -138,7 +138,7 @@ implementation
 	report_problem();
       }
 	  // conversion
-	  tempC = ( (-CONVERSION_D1) + (CONVERSION_D2 * data) ) / 100;
+	  tempC = ( (-CONVERSION_D1) + (CONVERSION_D2 * data) ) ;
     local.readings[reading++] = tempC;
   }
 }

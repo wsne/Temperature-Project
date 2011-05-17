@@ -23,7 +23,7 @@ enum {
 
   AM_TEMPERATURE = 0x93,
 
-  CONVERSION_D1 = 4010, /* VDD = 5V */
+  CONVERSION_D1 = 3960, /* VDD = 3V */
   CONVERSION_D2 = 1 /* 14 bits */
 };
 
