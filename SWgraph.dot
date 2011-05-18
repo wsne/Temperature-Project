@@ -1,12 +1,15 @@
-graph g{
+digraph g{
+compound = true
+
 	node [
 		shape = "box"
 	]
+
 	Boot -> MainC
 	RadioControl -> ActiveMessageC
 	AMSend -> AMSenderC
 	Receive -> AMReceiverC
 	Timer -> TimerMilliC
-	Read -> Sensor.Temperature
+	Read -> SensorTemperature
 	Leds -> LedsC
 }
