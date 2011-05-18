@@ -26,6 +26,7 @@ module TemperatureC @safe()
 		interface Timer<TMilli>;
 		interface Read<uint16_t>;
 		interface Leds;
+		interface PacketLink;
 	}
 }
 implementation
@@ -48,8 +49,8 @@ implementation
 	bool suppressCountChange;
 
 	// Use LEDs to report various status issues.
-	void report_problem() { call Leds.led0Toggle(); }
-	void report_sent() { call Leds.led1Toggle(); }
+	void report_problem() { call Leds.led0On(); }
+	void report_sent() { call Leds.led0Off(); call Leds.led1Toggle(); }
 	void report_received() {}
 
 	event void Boot.booted() {
@@ -107,6 +108,10 @@ implementation
 				// Don't need to check for null because we've already checked length
 				// above
 				memcpy(call AMSend.getPayload(&sendBuf, sizeof(local)), &local, sizeof local);
+
+				call PacketLink.setRetries(&sendBuf, 10);
+				call PacketLink.setRetryDelay(&sendBuf, 500);
+
 				if (call AMSend.send(41, &sendBuf, sizeof local) == SUCCESS)
 					sendBusy = TRUE;
 			}
@@ -126,7 +131,7 @@ implementation
 	}
 
 	event void AMSend.sendDone(message_t* msg, error_t error) {
-		if (error == SUCCESS)
+		if (call PacketLink.wasDelivered(msg))
 			report_sent();
 		else
 			report_problem();
