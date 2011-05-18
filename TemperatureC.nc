@@ -40,6 +40,8 @@ implementation
 
 	uint8_t reading; /* 0 to NREADINGS */
 
+	uint8_t ackTries; /* 0 to NACKTRIES */
+
 	/* When we head an Temperature message, we check it's sample count. If
 	   it's ahead of ours, we "jump" forwards (set our count to the received
 	   count). However, we must then suppress our next count increment. This
@@ -62,6 +64,8 @@ implementation
 	void startTimer() {
 		call Timer.startPeriodic(local.interval);
 		reading = 0;
+		ackTries = 0;
+		printf("ackTries = %d" , ackTries);
 	}
 
 	event void RadioControl.startDone(error_t error) {
@@ -99,35 +103,34 @@ implementation
 	   - read next sample
 	 */
 	event void Timer.fired() {
+		call PacketAcknowledgements.requestAck(&myMsg);
 		if (reading == NREADINGS)
 		{
-			if (!sendBusy && sizeof local <= call AMSend.maxPayloadLength())
-			{
-				// Don't need to check for null because we've already checked length
-				// above
-				memcpy(call AMSend.getPayload(&sendBuf, sizeof(local)), &local, sizeof local);
-				if (call AMSend.send(AM_BROADCAST_ADDR, &sendBuf, sizeof local) == SUCCESS)
-					sendBusy = TRUE;
-			}
-			if (!sendBusy)
-				report_problem();
-
-			reading = 0;
-			/* Part 2 of cheap "time sync": increment our count if we didn't
-			   jump ahead. */
-			if (!suppressCountChange)
-				local.count++;
-			suppressCountChange = FALSE;
+			sendReadings();
 		}
 		if (call Read.read() != SUCCESS)
 			report_problem();
 	}
 
 	event void AMSend.sendDone(message_t* msg, error_t error) {
-		if (error == SUCCESS)
+		if(call PacketAcknowledgements.wasAcked(msg)) {
+			printf("The package was Acked");
 			report_sent();
-		else
+			ackTries = 0;
+			printf("ackTries = %d" , ackTries);
+		} else {
+			printf("The package NOT was Acked");
+			if (ackTries < NACKTRIES) {
+				printf("Resend the package");
+				sendReadings();
+			}
+			if (ackTries == NACKTRIES) {
+				printf("ackTries is now == NACKTRIES");
+				ackTries = 0;
+				printf("ackTries = %d" , ackTries);
+			}
 			report_problem();
+		}
 
 		sendBusy = FALSE;
 	}
@@ -142,5 +145,28 @@ implementation
 		// conversion
 		tempC = ( (-CONVERSION_D1) + (CONVERSION_D2 * data) ) ;
 		local.readings[reading++] = tempC;
+	}
+
+	task void sendReadings() {
+		if (!sendBusy && sizeof local <= call AMSend.maxPayloadLength())
+		{
+			// Don't need to check for null because we've already checked length
+			// above
+			memcpy(call AMSend.getPayload(&sendBuf, sizeof(local)), &local, sizeof local);
+			if (call AMSend.send(SINK_NUMBER, &sendBuf, sizeof local) == SUCCESS)
+				sendBusy = TRUE;
+				ackTries++;
+				printf("ackTries = %d" , ackTries);
+		}
+		if (!sendBusy)
+			report_problem();
+
+		reading = 0;
+
+		/* Part 2 of cheap "time sync": increment our count if we didn't
+		   jump ahead. */
+		if (!suppressCountChange)
+			local.count++;
+		suppressCountChange = FALSE;
 	}
 }

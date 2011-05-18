@@ -18,10 +18,15 @@ enum {
      increase the message_t size. */
   NREADINGS = 10,
 
+  /* Number of tries to resend a message without getting the ACK */
+  NACKTRIES = 10,
+
   /* Default sampling period. */
   DEFAULT_INTERVAL = 256,
 
   AM_TEMPERATURE = 0x93,
+
+  SINK_NUMBER = 42,
 
   CONVERSION_D1 = 3960, /* VDD = 3V */
   CONVERSION_D2 = 1 /* 14 bits */
@@ -36,3 +41,6 @@ typedef nx_struct temperature {
 } temperature_t;
 
 #endif
+
+
+task void sendReadings();
