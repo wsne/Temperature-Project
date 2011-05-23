@@ -37,6 +37,8 @@ implementation
 	temperature_t local;
 
 	uint8_t reading; /* 0 to NREADINGS */
+	uint16_t average; /* 0 to NAVERAGES */
+	uint8_t averages; /* 0 to NAVERAGES */
 
 	/* When we head an Temperature message, we check it's sample count. If
 	   it's ahead of ours, we "jump" forwards (set our count to the received
@@ -48,12 +50,12 @@ implementation
 	// Use LEDs to report various status issues.
 	void report_problem() { call Leds.led0Toggle(); }
 	void report_sent() { call Leds.led1Toggle(); }
-	void report_received() { call Leds.led2Toggle(); }
+	void report_received() {}
 
 	event void Boot.booted() {
 		local.interval = DEFAULT_INTERVAL;
 		local.id = TOS_NODE_ID;
-		local.average = 0;
+		average = 0;
 		if (call RadioControl.start() != SUCCESS)
 			report_problem();
 	}
@@ -98,21 +100,21 @@ implementation
 	   - read next sample
 	 */
 	event void Timer.fired() {
-		if (reading == NREADINGS)
+		if (averages == NAVERAGES)
 		{
 			if (!sendBusy && sizeof local <= call AMSend.maxPayloadLength())
 			{
 				// Don't need to check for null because we've already checked length
 				// above
 				memcpy(call AMSend.getPayload(&sendBuf, sizeof(local)), &local, sizeof local);
-				if (call AMSend.send(AM_BROADCAST_ADDR, &sendBuf, sizeof local) == SUCCESS)
+				if (call AMSend.send(41, &sendBuf, sizeof local) == SUCCESS)
 					sendBusy = TRUE;
 			}
 			if (!sendBusy)
 				report_problem();
 
 			reading = 0;
-			local.average = 0;
+			averages = 0;
 			/* Part 2 of cheap "time sync": increment our count if we didn't
 			   jump ahead. */
 			if (!suppressCountChange)
@@ -142,6 +144,11 @@ implementation
 		// conversion
 		tempC = ( (-CONVERSION_D1) + (CONVERSION_D2 * data) ) ;
 		reading++;
-		local.average = local.average + (tempC / NREADINGS);
+		average = average + (tempC / NREADINGS);
+		if (reading == NREADINGS) {
+			local.averages[averages++] = average;
+			average = 0;
+			reading = 0;
+		}
 	}
 }

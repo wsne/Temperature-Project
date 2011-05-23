@@ -1,3 +1,4 @@
 COMPONENT=TemperatureAppC
+DEFAULT_LOCAL_GROUP=0x2A
 
 include $(MAKERULES)
