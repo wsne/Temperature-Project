@@ -53,6 +53,7 @@ implementation
 	event void Boot.booted() {
 		local.interval = DEFAULT_INTERVAL;
 		local.id = TOS_NODE_ID;
+		local.average = 0;
 		if (call RadioControl.start() != SUCCESS)
 			report_problem();
 	}
@@ -111,6 +112,7 @@ implementation
 				report_problem();
 
 			reading = 0;
+			local.average = 0;
 			/* Part 2 of cheap "time sync": increment our count if we didn't
 			   jump ahead. */
 			if (!suppressCountChange)
@@ -131,7 +133,7 @@ implementation
 	}
 
 	event void Read.readDone(error_t result, uint16_t data) {
-		float tempC;
+		float tempC = 0;
 		if (result != SUCCESS)
 		{
 			data = 0xffff;
@@ -139,6 +141,7 @@ implementation
 		}
 		// conversion
 		tempC = ( (-CONVERSION_D1) + (CONVERSION_D2 * data) ) ;
-		local.readings[reading++] = tempC;
+		reading++;
+		local.average = local.average + (tempC / NREADINGS);
 	}
 }

@@ -14,25 +14,25 @@
 #define TEMPERATURE_H
 
 enum {
-  /* Number of readings per message. If you increase this, you may have to
-     increase the message_t size. */
-  NREADINGS = 10,
+	/* Number of readings per message. If you increase this, you may have to
+	   increase the message_t size. */
+	NREADINGS = 10,
 
-  /* Default sampling period. */
-  DEFAULT_INTERVAL = 256,
+	/* Default sampling period. */
+	DEFAULT_INTERVAL = 256,
 
-  AM_TEMPERATURE = 0x93,
+	AM_TEMPERATURE = 0x93,
 
-  CONVERSION_D1 = 3960, /* VDD = 3V */
-  CONVERSION_D2 = 1 /* 14 bits */
+	CONVERSION_D1 = 3960, /* VDD = 3V */
+	CONVERSION_D2 = 1 /* 14 bits */
 };
 
 typedef nx_struct temperature {
-  nx_uint16_t version; /* Version of the interval. */
-  nx_uint16_t interval; /* Samping period. */
-  nx_uint16_t id; /* Mote id of sending mote. */
-  nx_uint16_t count; /* The readings are samples count * NREADINGS onwards */
-  nx_uint16_t readings[NREADINGS];
+	nx_uint16_t version; /* Version of the interval. */
+	nx_uint16_t interval; /* Samping period. */
+	nx_uint16_t id; /* Mote id of sending mote. */
+	nx_uint16_t count; /* The readings are samples count * NREADINGS onwards */
+	nx_uint16_t average; /* average of readings in this window */
 } temperature_t;
 
 #endif
