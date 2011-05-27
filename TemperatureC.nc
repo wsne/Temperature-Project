@@ -88,6 +88,7 @@ implementation
 
 			reading = 0;
 			averages = 0;
+			local.count++;
 		}
 		if (call Read.read() != SUCCESS)
 			report_problem();
