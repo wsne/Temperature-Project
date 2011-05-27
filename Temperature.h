@@ -14,6 +14,7 @@
 #define TEMPERATURE_H
 
 enum {
+	BASESTATION = 41
 	/* Number of readings per message. If you increase this, you may have to
 	   increase the message_t size. */
 	NREADINGS = 10,

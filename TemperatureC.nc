@@ -112,7 +112,7 @@ implementation
 				call PacketLink.setRetries(&sendBuf, NACKTRIES);
 				call PacketLink.setRetryDelay(&sendBuf, RETRYDELAY);
 
-				if (call AMSend.send(41, &sendBuf, sizeof local) == SUCCESS)
+				if (call AMSend.send(BASESTATION, &sendBuf, sizeof local) == SUCCESS)
 					sendBusy = TRUE;
 			}
 			if (!sendBusy)
