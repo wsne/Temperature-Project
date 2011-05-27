@@ -26,7 +26,6 @@ implementation
   TemperatureC.Boot -> MainC;
   TemperatureC.RadioControl -> ActiveMessageC;
   TemperatureC.AMSend -> AMSenderC;
-  TemperatureC.Receive -> AMReceiverC;
   TemperatureC.Timer -> TimerMilliC;
   TemperatureC.Read -> Sensor.Temperature;
   TemperatureC.Leds -> LedsC;
