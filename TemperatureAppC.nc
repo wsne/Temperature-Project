@@ -21,7 +21,7 @@ implementation
 {
   components TemperatureC, MainC, ActiveMessageC, LedsC, CC2420ActiveMessageC,
     new TimerMilliC(), new SensirionSht11C() as Sensor,
-    new AMSenderC(AM_TEMPERATURE), new AMReceiverC(AM_TEMPERATURE);
+    new AMSenderC(AM_TEMPERATURE);
 
   TemperatureC.Boot -> MainC;
   TemperatureC.RadioControl -> ActiveMessageC;
