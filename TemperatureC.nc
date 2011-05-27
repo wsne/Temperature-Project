@@ -109,8 +109,8 @@ implementation
 				// above
 				memcpy(call AMSend.getPayload(&sendBuf, sizeof(local)), &local, sizeof local);
 
-				call PacketLink.setRetries(&sendBuf, 10);
-				call PacketLink.setRetryDelay(&sendBuf, 500);
+				call PacketLink.setRetries(&sendBuf, NACKTRIES);
+				call PacketLink.setRetryDelay(&sendBuf, RETRYDELAY);
 
 				if (call AMSend.send(41, &sendBuf, sizeof local) == SUCCESS)
 					sendBusy = TRUE;

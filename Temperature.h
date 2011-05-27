@@ -19,6 +19,10 @@ enum {
 	NREADINGS = 10,
 	NAVERAGES = 10,
 
+	/* The delay between retries and the times to retry */
+	RETRYDELAY = 500,
+	NACKTRIES = 10,
+
 	/* Default sampling period. */
 	DEFAULT_INTERVAL = 256,
 
